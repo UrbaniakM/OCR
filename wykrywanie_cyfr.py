@@ -11,7 +11,7 @@ def polygon_area(x,y):
     return 0.5*np.abs(np.dot(x,np.roll(y,1))-np.dot(y,np.roll(x,1)))
 
 def recognize_if_sign(adjusted_image, k):
-    subPlt = plt.subplot(5,2,k+1)
+    subPlt = plt.subplot(50,2,k+1)
     plt.axis('off')
     subPlt.set_aspect('equal')
     io.imshow(adjusted_image)
@@ -28,7 +28,7 @@ def process_image(image_input, k):
     array_min_max = []
     for n, coords in enumerate(edges):
         sizeOfPolygon = polygon_area(coords[:,1],coords[:,0])
-        if (sizeOfPolygon > 50) and (coords[0,1] == coords[-1,1]) and (coords[0,0] == coords[-1,0]):
+        if (sizeOfPolygon > 25) and (coords[0,1] == coords[-1,1]) and (coords[0,0] == coords[-1,0]):
             xMin, xMax = (np.min(coords[:,1]),np.max(coords[:,1]))
             yMin, yMax = (np.min(coords[:,0]),np.max(coords[:,0]))
             not_inside = True

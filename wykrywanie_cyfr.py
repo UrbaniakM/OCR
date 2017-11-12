@@ -1,11 +1,8 @@
-'''AUTHORS
-Mateusz Urbaniak
-Kajetan Zimniak'''
-
 import matplotlib.pyplot as plt
 import numpy as np
 from skimage import data, io, measure, color, feature, filters, exposure, img_as_ubyte, morphology, transform
 from math import ceil
+from skimage.feature import match_template
 
 def polygon_area(x,y):
     return 0.5*np.abs(np.dot(x,np.roll(y,1))-np.dot(y,np.roll(x,1)))
@@ -16,10 +13,9 @@ def recognize_if_sign(adjusted_image, k):
     subPlt.set_aspect('equal')
     io.imshow(adjusted_image)
     
-def process_image(image_input, k):
+def process_image(image_input, k, templates_array):
     
     #subPlt = plt.subplot(1,2,k+1)
-    #
     image = color.rgb2gray(image_input)
     percentileP, percentileK = np.percentile(image,(2,98))
     image = exposure.rescale_intensity(image,in_range=(percentileP,percentileK))
@@ -40,13 +36,24 @@ def process_image(image_input, k):
     for n,instance in enumerate(array_min_max):
         adjusted_image = image[instance[2]:instance[3],instance[0]:instance[1]] #cropping - image[ymin:ymax,xmin:xmax]
         # RESIZE? RESCALE? etc.
+        #result = match_template(adjusted_image, template1)
+        adjusted_image = transform.resize(adjusted_image, (30, 30),mode='reflect')
+        for x in range(10):        
+            if match_template(adjusted_image, templates_array[x]) > 0.6:
+                print(x)
+        #print(match_template(adjusted_image, templates_array[x]))            
+        
         recognize_if_sign(adjusted_image, n)
 
 if __name__ == '__main__':
     plt.figure(figsize=(50,100))
     images = io.ImageCollection('images/*.jpg')
-
+    templates_input = io.ImageCollection('data_sets/*.jpg')
+    templates = []
+    for template in templates_input:
+       	template = transform.resize(template, (30, 30),mode='reflect')
+        templates.append(color.rgb2gray(template))
     for n,image in enumerate(images):
-        process_image(image,n)
+        process_image(image,n, templates)
     plt.subplots_adjust(wspace=0, hspace=0)
     plt.savefig('edges.pdf')   

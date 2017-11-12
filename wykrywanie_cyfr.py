@@ -39,8 +39,9 @@ def process_image(image_input, k, templates_array):
         #result = match_template(adjusted_image, template1)
         adjusted_image = transform.resize(adjusted_image, (30, 30),mode='reflect')
         for x in range(10):        
-            if match_template(adjusted_image, templates_array[x]) > 0.6:
+            if match_template(adjusted_image, templates_array[x]) > 0.7:
                 print(x)
+                break
         #print(match_template(adjusted_image, templates_array[x]))            
         
         recognize_if_sign(adjusted_image, n)

@@ -3,6 +3,7 @@ import numpy as np
 from skimage import data, io, measure, color, feature, filters, exposure, img_as_ubyte, morphology, transform, draw
 from math import ceil
 from skimage.feature import match_template
+import cv2
 
 def polygon_area(x,y):
     return 0.5*np.abs(np.dot(x,np.roll(y,1))-np.dot(y,np.roll(x,1)))
@@ -10,14 +11,15 @@ def polygon_area(x,y):
 def recognize_if_sign(adjusted_image, k, templates):
     result = -1
     for x in range(10):        
-            if match_template(adjusted_image, templates[x]) > 0.65:
+            if match_template(adjusted_image, templates[x]) > 0.75:
                 result = x
                 break
     return result
 
-def draw_rectangle(image,x_min, y_min, x_max, y_max):
+def draw_rectangle(image,x_min, y_min, x_max, y_max,digit):
     rr,cc = draw.polygon_perimeter([x_min, x_max, x_max, x_min], [y_min, y_min, y_max, y_max], shape=None, clip=False)
     image[rr,cc] = (0,255,255)
+    cv2.putText(image, str(digit), ((y_max-5), (x_max+15) ), cv2.FONT_HERSHEY_SIMPLEX, 0.65, (255, 0, 0), 2)
     return image
 
     
@@ -52,7 +54,7 @@ def process_image(image_input, k, templates_array, numOfPictures):
         res = recognize_if_sign(adjusted_image, n, templates_array)
         if res != -1:
            print(res)
-           image_input = draw_rectangle(image_input,instance[2],instance[0],instance[3],instance[1])
+           image_input = draw_rectangle(image_input,instance[2],instance[0],instance[3],instance[1],res)
            io.imshow(templates_array[res])
     io.imshow(image_input)
 

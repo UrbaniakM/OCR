@@ -10,7 +10,7 @@ def polygon_area(x,y):
 def recognize_if_sign(adjusted_image, k, templates):
     result = -1
     for x in range(10):        
-            if match_template(adjusted_image, templates[x]) > 0.7:
+            if match_template(adjusted_image, templates[x]) > 0.75:
                 result = x
                 break
     return result
@@ -48,7 +48,7 @@ def process_image(image_input, k, templates_array, numOfPictures):
                 array_min_max.append([int(xMin), ceil(xMax), int(yMin), ceil(yMax)]) #min - round down, max - round up
     for n,instance in enumerate(array_min_max):
         adjusted_image = image[instance[2]:instance[3],instance[0]:instance[1]] #cropping - image[ymin:ymax,xmin:xmax]
-        adjusted_image = transform.resize(adjusted_image, (24, 16),mode='reflect')         
+        adjusted_image = transform.resize(adjusted_image, (12, 8),mode='reflect')         
         res = recognize_if_sign(adjusted_image, n, templates_array)
         if res != -1:
            print(res)
@@ -57,11 +57,11 @@ def process_image(image_input, k, templates_array, numOfPictures):
 
 if __name__ == '__main__':
     plt.figure(figsize=(50,100))
-    images = io.ImageCollection('images/*.jpg') #'obrazy do testow/*.jpg'
+    images = io.ImageCollection('images/*.jpg') #'obrazy do testow/*.jpg'   'images/*.jpg'
     templates_input = io.ImageCollection('data_sets/*.jpg')
     templates = []
     for template in templates_input:
-       	template = transform.resize(template, (24, 16),mode='reflect')
+       	template = transform.resize(template, (12, 8),mode='reflect')
         templates.append(color.rgb2gray(template))
     for n,image in enumerate(images):
         process_image(image,n, templates, len(images))

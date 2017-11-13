@@ -10,7 +10,7 @@ def polygon_area(x,y):
 def recognize_if_sign(adjusted_image, k, templates):
     result = -1
     for x in range(10):        
-            if match_template(adjusted_image, templates[x]) > 0.75:
+            if match_template(adjusted_image, templates[x]) > 0.65:
                 result = x
                 break
     return result
@@ -29,8 +29,8 @@ def process_image(image_input, k, templates_array, numOfPictures):
     image = color.rgb2gray(image_input)
     percentileP, percentileK = np.percentile(image,(2,98))
     #image = exposure.rescale_intensity(image,in_range=(percentileP,percentileK))
-    #image = morphology.closing(image)
-    #image = morphology.opening(image)
+    image = morphology.closing(image)
+    image = morphology.opening(image)
     #image = morphology.dilation(image)
     #image = morphology.erosion(image)
     edges = measure.find_contours(image, level=0.3, fully_connected='low', positive_orientation='high')
@@ -53,6 +53,7 @@ def process_image(image_input, k, templates_array, numOfPictures):
         if res != -1:
            print(res)
            image_input = draw_rectangle(image_input,instance[2],instance[0],instance[3],instance[1])
+           io.imshow(templates_array[res])
     io.imshow(image_input)
 
 if __name__ == '__main__':

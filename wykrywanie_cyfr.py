@@ -21,18 +21,18 @@ def draw_rectangle(image,x_min, y_min, x_max, y_max):
     return image
 
     
-def process_image(image_input, k, templates_array):
-    subPlt = plt.subplot(3,1,k+1)
+def process_image(image_input, k, templates_array, numOfPictures):
+    subPlt = plt.subplot(numOfPictures,1,k+1)
     plt.axis('off')
     subPlt.set_aspect('equal')
 
     image = color.rgb2gray(image_input)
     percentileP, percentileK = np.percentile(image,(2,98))
-    image = exposure.rescale_intensity(image,in_range=(percentileP,percentileK))
-    image = morphology.closing(image)
-    image = morphology.opening(image)
-    image = morphology.dilation(image)
-    image = morphology.erosion(image)
+    #image = exposure.rescale_intensity(image,in_range=(percentileP,percentileK))
+    #image = morphology.closing(image)
+    #image = morphology.opening(image)
+    #image = morphology.dilation(image)
+    #image = morphology.erosion(image)
     edges = measure.find_contours(image, level=0.3, fully_connected='low', positive_orientation='high')
     array_min_max = []
     for n, coords in enumerate(edges):
@@ -57,13 +57,13 @@ def process_image(image_input, k, templates_array):
 
 if __name__ == '__main__':
     plt.figure(figsize=(50,100))
-    images = io.ImageCollection('images/*.jpg')
+    images = io.ImageCollection('images/*.jpg') #'obrazy do testow/*.jpg'
     templates_input = io.ImageCollection('data_sets/*.jpg')
     templates = []
     for template in templates_input:
        	template = transform.resize(template, (24, 16),mode='reflect')
         templates.append(color.rgb2gray(template))
     for n,image in enumerate(images):
-        process_image(image,n, templates)
+        process_image(image,n, templates, len(images))
     plt.subplots_adjust(wspace=0, hspace=0)
     plt.savefig('edges.pdf')   

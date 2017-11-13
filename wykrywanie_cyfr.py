@@ -29,12 +29,15 @@ def process_image(image_input, k, templates_array):
     image = color.rgb2gray(image_input)
     percentileP, percentileK = np.percentile(image,(2,98))
     image = exposure.rescale_intensity(image,in_range=(percentileP,percentileK))
-    #TODO - noise removing
+    image = morphology.closing(image)
+    image = morphology.opening(image)
+    image = morphology.dilation(image)
+    image = morphology.erosion(image)
     edges = measure.find_contours(image, level=0.3, fully_connected='low', positive_orientation='high')
     array_min_max = []
     for n, coords in enumerate(edges):
-        sizeOfPolygon = polygon_area(coords[:,1],coords[:,0])
-        if (sizeOfPolygon > 25) and (coords[0,1] == coords[-1,1]) and (coords[0,0] == coords[-1,0]):
+        sizeOfPolygon = polygon_area(coords[:,1],coords[:,0]) #niepotrzebne
+        if (coords[0,1] == coords[-1,1]) and (coords[0,0] == coords[-1,0]):
             xMin, xMax = (np.min(coords[:,1]),np.max(coords[:,1]))
             yMin, yMax = (np.min(coords[:,0]),np.max(coords[:,0]))
             not_inside = True

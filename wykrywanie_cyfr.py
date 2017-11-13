@@ -30,7 +30,7 @@ def process_image(image_input, k, templates_array, numOfPictures):
 
     image = color.rgb2gray(image_input)
     percentileP, percentileK = np.percentile(image,(2,98))
-    #image = exposure.rescale_intensity(image,in_range=(percentileP,percentileK))
+    image = exposure.rescale_intensity(image,in_range=(percentileP,percentileK))
     image = morphology.closing(image)
     image = morphology.opening(image)
     #image = morphology.dilation(image)
@@ -50,7 +50,9 @@ def process_image(image_input, k, templates_array, numOfPictures):
                 array_min_max.append([int(xMin), ceil(xMax), int(yMin), ceil(yMax)]) #min - round down, max - round up
     for n,instance in enumerate(array_min_max):
         adjusted_image = image[instance[2]:instance[3],instance[0]:instance[1]] #cropping - image[ymin:ymax,xmin:xmax]
-        adjusted_image = transform.resize(adjusted_image, (12, 8),mode='reflect')         
+        img_width,img_height = adjusted_image.shape
+        adjusted_image = transform.resize(adjusted_image, (12, 8),mode='reflect')
+        #adjusted_image = transform.rescale  (adjusted_image, (12/img_width, 8/img_height),mode='reflect')     
         res = recognize_if_sign(adjusted_image, n, templates_array)
         if res != -1:
            print(res)
@@ -61,10 +63,13 @@ def process_image(image_input, k, templates_array, numOfPictures):
 if __name__ == '__main__':
     plt.figure(figsize=(50,100))
     images = io.ImageCollection('images/*.jpg') #'obrazy do testow/*.jpg'   'images/*.jpg'
+    #images = io.ImageCollection('obrazy do testow/*.jpg')
     templates_input = io.ImageCollection('data_sets/*.jpg')
     templates = []
     for template in templates_input:
-       	template = transform.resize(template, (12, 8),mode='reflect')
+        tem_width,tem_height,num_of_colors = template.shape
+        template = transform.resize(template, (12, 8),mode='reflect')
+        #template = transform.rescale(template, (12/tem_width, 8/tem_height),mode='reflect')
         templates.append(color.rgb2gray(template))
     for n,image in enumerate(images):
         process_image(image,n, templates, len(images))

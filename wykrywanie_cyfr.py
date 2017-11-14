@@ -55,7 +55,7 @@ def process_image(image_input, k, templates_array, numOfPictures):
         #adjusted_image = transform.rescale  (adjusted_image, (12/img_width, 8/img_height),mode='reflect')     
         res = recognize_if_sign(adjusted_image, n, templates_array)
         if res != -1:
-           print(res)
+           #print(res)
            image_input = draw_rectangle(image_input,instance[2],instance[0],instance[3],instance[1],res)
            io.imshow(templates_array[res])
     io.imshow(image_input)
@@ -74,4 +74,4 @@ if __name__ == '__main__':
     for n,image in enumerate(images):
         process_image(image,n, templates, len(images))
     plt.subplots_adjust(wspace=0, hspace=0)
-    plt.savefig('edges.pdf')   
+    plt.savefig('wynik.pdf')   
